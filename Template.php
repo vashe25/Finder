@@ -1,18 +1,24 @@
 <?php
+namespace View;
 
 class Template
 {
-	function __construct()
-	{
+    protected $templateFolder = __DIR__ . "/templates/";
 
-	}
+    protected $templateName = "";
 
-	private function renderTemplate()
+	protected function renderTemplate($data = null)
 	{
 		ob_start();
-		include $templateFolder . $templateName;
+		include $this->templateFolder . $this->templateName;
 		$result = ob_get_contents();
-		ob_end_flush();
+		ob_end_clean();
 		return $result;
+	}
+
+    public function view($template, $data = null)
+    {
+        $this->templateName = $template . ".php";
+        return $this->renderTemplate($data);
 	}
 }
