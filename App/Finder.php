@@ -1,25 +1,26 @@
 <?php
-namespace App;
-require "vendor/autoload.php";
-require "Template.php";
+namespace Core;
 use GuzzleHttp\Client;
 use View\Template;
 
 Class Finder {
-	function __construct(Client $client, Template $template) {
-		$this->client = $client;
-        $this->template = $template;
-	}
 	// Client object
 	protected $client;
-    // Template object
-    protected $template;
+	// Template object
+	protected $template;
 	// Array for URLs
-	protected $links = array('http://moscow.megafon.ru/', 'http://spb.megafon.ru/tariffs', 'http://spb.megafon.ru/123/');
+	protected $links = array("http://www.example.com");
 	// RegExp string
 	protected $pattern = "<a href=\".+\">.+</a>";
 	// Matches array
 	protected $matches = array();
+	// FileName for Links array
+	protected $fileName = "links-array.txt";
+
+	function __construct(Client $client, Template $template) {
+		$this->client = $client;
+		$this->template = $template;
+	}
 
 	protected function sendRequest($client, $link) {
 		try {
@@ -28,7 +29,6 @@ Class Finder {
 					'max' => 10, // allow at most 10 redirects.
 					'strict' => true, // use "strict" RFC compliant redirects.
 					'referer' => true, // add a Referer header
-
 					'protocols' => ['https', 'http'], // allow https|http URLs
 					'track_redirects' => true
 				],
@@ -71,16 +71,13 @@ Class Finder {
 		return TRUE;
 	}
 
-	protected function createFile($filename = "links-array.txt") {
-		$fp = fopen($filename, "w");
-		$string = "http://www.yandex.ru/";
-		fwrite($fp, $string);
-		fclose($fp);
+	protected function createFile() {
+		file_put_contents($this->fileName, $this->links);
 		return TRUE;
 	}
 
-	protected function loadFile($filename = "links-array.txt") {
-		$linksArray = file($filename, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
+	protected function loadFile() {
+		$linksArray = file($this->fileName, FILE_SKIP_EMPTY_LINES | FILE_IGNORE_NEW_LINES);
 		$this->setLinks($linksArray);
 		return TRUE;
 	}
@@ -95,27 +92,31 @@ Class Finder {
 		return TRUE;
 	}
 
-	public function run($pattern) {
-		if (file_exists("links-array.txt") && isset($pattern)) {
-			$this->loadFile();
-			$this->setPattern($pattern);
-			$this->collectResponse();
-			$this->matchPattern();
-            $view = $this->template->view("html", $this->matches);
-            file_put_contents("finderResults.html", $view);
-			echo "Check: finderResults.html";
+	public function run($pattern = false) {
+		if (file_exists($this->fileName)) {
+            $this->loadFile();
+            $this->collectResponse();
+            if ($pattern != false) {
+                $this->setPattern($pattern);
+                $this->matchPattern();
+                $view = $this->template->view("html", $this->matches);
+                $fileName = "finderResults.html";
+            } else {
+                $view = $this->template->view("txt", $this->matches);
+                $fileName = "finderResults.txt";
+            }
+            file_put_contents($fileName, $view);
+			echo "Check: " . $fileName;
 		} else {
-			if (!file_exists("links-array.txt")) {
+			if (!file_exists($this->fileName)) {
 				$this->createFile();
-				echo "links-array.txt created\n";
+				echo "Created: " . $this->fileName . "\n\n";
 			}
-			echo "reRun finder with parameter:\n";
-			echo "	php script.php \"pattern\"";
+			echo "reRun App:\n";
+			echo "\$ php App.php\n\n";
+			echo "reRun App with pattern:\n";
+			echo "\$ php script.php \"pattern\"";
 		}
 	}
 
 }
-
-$F = new Finder(new Client(), new Template());
-$F->run($argv[1]);
-exit;

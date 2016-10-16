@@ -5,7 +5,7 @@
 	<meta charset="utf-8" />
 </head>
 <body>
-	<h1><?/*=htmlspecialchars($this->pattern);*/?></h1>
+	<h1><?=htmlspecialchars($pattern);?></h1>
 	<table border="1px" cellspacing="0px">
 		<? foreach ($data as $link => $row) :?>
 			<tr>

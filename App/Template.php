@@ -7,8 +7,7 @@ class Template
 
     protected $templateName = "";
 
-	protected function renderTemplate($data = null)
-	{
+	protected function renderTemplate($data = null, $pattern = null) {
 		ob_start();
 		include $this->templateFolder . $this->templateName;
 		$result = ob_get_contents();
@@ -16,8 +15,7 @@ class Template
 		return $result;
 	}
 
-    public function view($template, $data = null)
-    {
+    public function view($template, $data = null) {
         $this->templateName = $template . ".php";
         return $this->renderTemplate($data);
 	}
