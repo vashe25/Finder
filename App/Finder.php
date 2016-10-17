@@ -1,7 +1,8 @@
 <?php
-namespace Core;
+namespace App;
+
 use GuzzleHttp\Client;
-use View\Template;
+use App\Template;
 
 Class Finder {
 	// Client object
@@ -17,7 +18,7 @@ Class Finder {
 	// FileName for Links array
 	protected $fileName = "links-array.txt";
 
-	function __construct(Client $client, Template $template) {
+	public function __construct(Client $client, Template $template) {
 		$this->client = $client;
 		$this->template = $template;
 	}
@@ -81,11 +82,13 @@ Class Finder {
 		$this->setLinks($linksArray);
 		return TRUE;
 	}
+	
 	// Set pattern
 	protected function setPattern($pattern) {
 		$this->pattern = "|".$pattern."|im";
 		return TRUE;
 	}
+	
 	// Set links
 	protected function setLinks(Array $array) {
 		$this->links = $array;

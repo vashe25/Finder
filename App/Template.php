@@ -1,8 +1,7 @@
 <?php
-namespace View;
+namespace App;
 
-class Template
-{
+class Template {
     protected $templateFolder = __DIR__ . "/templates/";
 
     protected $templateName = "";
@@ -15,7 +14,7 @@ class Template
 		return $result;
 	}
 
-    public function view($template, $data = null) {
+    public function view($template, $data = null, $pattern = null) {
         $this->templateName = $template . ".php";
         return $this->renderTemplate($data);
 	}

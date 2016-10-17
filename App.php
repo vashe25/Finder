@@ -1,11 +1,9 @@
 <?php
-namespace App;
 require "vendor/autoload.php";
-require "App/Finder.php";
-require "App/Template.php";
+
 use GuzzleHttp\Client;
-use View\Template;
-use Core\Finder;
+use App\Template;
+use App\Finder;
 
 $F = new Finder(new Client(), new Template());
 if (isset($argv[1])) {
